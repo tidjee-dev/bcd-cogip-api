@@ -16,8 +16,8 @@ use Castor\Attribute\AsTask;
  * This task runs the 'composer install' command to install
  * all dependencies defined in the composer.json file.
  */
-#[AsTask(description: 'Install composer dependencies', namespace: 'composer')]
-function install(): void
+#[AsTask(description: 'Install composer dependencies', aliases: ['comp:install'], namespace: 'composer')]
+function composerInstall(): void
 {
     io()->title('Installing composer dependencies');
     run('composer install');
@@ -36,8 +36,8 @@ function install(): void
  * all services defined in the compose.yml file in
  * detached mode.
  */
-#[AsTask(description: 'Start Docker Stack', namespace: 'docker')]
-function start(): void
+#[AsTask(description: 'Start Docker Stack', aliases: ['docker:start'], namespace: 'docker')]
+function dockerStart(): void
 {
     io()->title('Starting Docker Stack');
     run('docker compose up -d');
@@ -51,8 +51,8 @@ function start(): void
  * This task is useful to stop all services when you are done with
  * development or testing.
  */
-#[AsTask(description: 'Stop Docker Stack', namespace: 'docker')]
-function stop(): void
+#[AsTask(description: 'Stop Docker Stack', aliases: ['docker:stop'], namespace: 'docker')]
+function dockerStop(): void
 {
     io()->title('Stopping Docker Stack');
     run('docker compose stop');
@@ -66,8 +66,8 @@ function stop(): void
  * This task is useful to restart all services when you have made
  * changes to the compose.yml file.
  */
-#[AsTask(description: 'Restart Docker Stack', namespace: 'docker')]
-function restart(): void
+#[AsTask(description: 'Restart Docker Stack', aliases: ['docker:restart'], namespace: 'docker')]
+function dockerRestart(): void
 {
     io()->title('Restarting Docker Stack');
     run('docker compose restart');
@@ -81,8 +81,8 @@ function restart(): void
  * This task is useful to remove all services when you are done with
  * development or testing.
  */
-#[AsTask(description: 'Remove Docker Stack', namespace: 'docker')]
-function remove(): void
+#[AsTask(description: 'Remove Docker Stack', aliases: ['docker:remove'], namespace: 'docker')]
+function dockerRemove(): void
 {
     io()->title('Removing Docker Stack');
     io()->info('This will remove all services defined in the compose.yml file.');
@@ -104,8 +104,8 @@ function remove(): void
  *
  * @see https://docs.docker.com/engine/reference/commandline/system_prune/
  */
-#[AsTask(description: 'Clean Docker Environment', namespace: 'docker')]
-function clean(): void
+#[AsTask(description: 'Clean Docker Environment', aliases: ['docker:clean'], namespace: 'docker')]
+function dockerClean(): void
 {
     io()->title('Cleaning Docker Environment');
     io()->info('This will remove all unused Docker images, containers and networks.');
@@ -135,8 +135,8 @@ function clean(): void
  *
  * @see https://symfony.com/doc/current/setup.html
  */
-#[AsTask(description: 'Create new Symfony project', namespace: 'symfony')]
-function create(): void
+#[AsTask(description: 'Create new Symfony project', aliases: ['sf:create'], namespace: 'symfony')]
+function symfonyCreate(): void
 {
     io()->title('Creating new Symfony project');
     $projectName = io()->ask('What is the name of the project?', 'app');
@@ -171,8 +171,8 @@ function create(): void
  *
  * @see https://symfony.com/doc/current/setup/symfony_server.html
  */
-#[AsTask(description: 'Start Symfony server', namespace: 'symfony')]
-function server(): void
+#[AsTask(description: 'Start Symfony server', aliases: ['sf:server:start'], namespace: 'symfony')]
+function serverStart(): void
 {
     io()->title('Opening Symfony server');
     run('symfony serve -d --listen-ip=localhost');
@@ -186,7 +186,7 @@ function server(): void
  *
  * @see https://symfony.com/doc/current/setup/symfony_server.html
  */
-#[AsTask(description: 'Stop Symfony server', namespace: 'symfony')]
+#[AsTask(description: 'Stop Symfony server', aliases: ['sf:server:stop'], namespace: 'symfony')]
 function serverStop(): void
 {
     io()->title('Stopping Symfony server');
@@ -199,8 +199,8 @@ function serverStop(): void
  * This task runs the `symfony console cache:clear` command to clear the
  * Symfony cache.
  */
-#[AsTask(description: 'Clear Cache', namespace: 'symfony')]
-function clear(): void
+#[AsTask(description: 'Clear Cache', aliases: ['sf:cache:clear'], namespace: 'symfony')]
+function clearCache(): void
 {
     io()->title('Clearing Cache');
     run('symfony console cache:clear');
@@ -227,57 +227,6 @@ function installMakerBundle(): void
     io()->success('Maker Bundle installed');
 }
 
-/**
- * Create a new User Entity.
- *
- * This task will ask for the name of the user entity and then
- * run the `symfony console make:user` command to create the
- * entity.
- *
- * @see https://symfony.com/doc/current/security.html#creating-your-first-user-class
- */
-#[AsTask(description: 'Create new User Entity', aliases: ['make:user'], namespace: 'maker')]
-function makeUser(): void
-{
-    io()->title('Creating new User Entity');
-    $className = io()->ask('What is the name of the user entity?', 'Users');
-    run('symfony console make:user ' . $className);
-}
-
-/**
- * Create a new Doctrine Entity.
- *
- * This task will ask for the name of the entity and then
- * run the `symfony console make:entity` command to create the
- * entity.
- *
- * @see https://symfony.com/doc/current/doctrine.html#creating-the-database-tables-schema
- */
-#[AsTask(description: 'Create new Entity', aliases: ['make:entity'], namespace: 'maker')]
-function makeEntity(): void
-{
-    io()->title('Creating new Entity');
-    $className = io()->ask('What is the name of the entity?');
-    run('symfony console make:entity ' . $className);
-}
-
-/**
- * Create a new Doctrine Controller.
- *
- * This task will prompt for the name of the controller and then
- * execute the `symfony console make:controller` command to create
- * the controller.
- *
- * @see https://symfony.com/doc/current/controller.html
- */
-#[AsTask(description: 'Create new Doctrine Controller', aliases: ['make:controller'], namespace: 'maker')]
-function makeController(): void
-{
-    io()->title('Creating new Doctrine Controller');
-    $className = io()->ask('What is the name of the controller?');
-    run('symfony console make:controller ' . $className);
-}
-
 /*
  * DB
  */
@@ -294,7 +243,7 @@ function makeController(): void
 function createDatabase(): void
 {
     io()->title('Creating new Database');
-    run('symfony console doctrine:database:create');
+    run('symfony console doctrine:database:create --if-not-exists');
 }
 
 /**
@@ -380,6 +329,12 @@ function resetDatabase(): void
     run('symfony console doctrine:database:drop --force');
     run('symfony console doctrine:database:create');
     run('symfony console doctrine:migrations:migrate');
+    $fixtures = io()->ask('Would you like to load fixtures?', 'y');
+    if ($fixtures === 'y') {
+        loadFixtures();
+    }
+    io()->newLine();
+    io()->success('Database reset');
 }
 
 /*
@@ -417,23 +372,23 @@ function installFixtures(): void
             fs()->touch($path . '/AppFixtures.php');
 
             $fixturesFileContent = <<<'EOF'
-<?php
+            <?php
 
-namespace App\DataFixtures;
+            namespace App\DataFixtures;
 
-use Faker\Factory as Factory;
-use Doctrine\Persistence\ObjectManager;
-use Doctrine\Bundle\FixturesBundle\Fixture;
+            use Faker\Factory as Factory;
+            use Doctrine\Persistence\ObjectManager;
+            use Doctrine\Bundle\FixturesBundle\Fixture;
 
-class AppFixtures extends Fixture
-{
-    public function load(ObjectManager $manager)
-    {
-        $faker = Factory::create('fr_FR');
-        // ...
-    }
-}
-EOF;
+            class AppFixtures extends Fixture
+            {
+                public function load(ObjectManager $manager): void
+                {
+                    $faker = Factory::create('fr_FR');
+                    // ...
+                }
+            }
+            EOF;
 
             fs()->appendToFile($path . '/AppFixtures.php', $fixturesFileContent);
             io()->newLine();
