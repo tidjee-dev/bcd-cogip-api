@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Entity\Users;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserManager
@@ -38,5 +39,23 @@ class UserManager
     $this->entityManager->flush();
 
     return $user;
+  }
+
+  public function login(
+    string $email,
+    string $password
+  ): JsonResponse {
+    $user = $this->entityManager->getRepository(Users::class)->findOneByEmail($email);
+
+    if (!$user) {
+      return new JsonResponse(['error' => 'Invalid email!'], 400);
+    }
+
+    // TODO: Connect the user
+    if (!$this->passwordHasher->isPasswordValid($user, $password)) {
+      return new JsonResponse(['error' => 'Invalid password!'], 400);
+    }
+
+    return new JsonResponse(['message' => 'Login!'], 200);
   }
 }

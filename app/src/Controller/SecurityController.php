@@ -4,8 +4,8 @@ namespace App\Controller;
 
 use App\Service\UserManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 class SecurityController extends AbstractController
@@ -18,21 +18,30 @@ class SecurityController extends AbstractController
   }
 
   #[Route('/api/login', name: 'app_login', methods: ['POST'])]
-  public function login(): Response
-  {
-    return $this->json('Login');
-  }
-
-  #[Route('/api/register', name: 'app_register', methods: ['POST'])]
-  public function register(Request $request): Response
+  public function login(Request $request): JsonResponse
   {
     $data = json_decode($request->getContent(), true);
 
-    // dd($data);
+    $email = $data['email'];
+    $password = $data['password'];
+
+    if (!$email || !$password) {
+      return new JsonResponse(['error' => 'Invalid data!'], 400);
+    } else {
+      $this->userManager->login($email, $password);
+    }
+
+    return new JsonResponse(['message' => 'Login!'], 200);
+  }
+
+  #[Route('/api/register', name: 'app_register', methods: ['POST'])]
+  public function register(Request $request): JsonResponse
+  {
+    $data = json_decode($request->getContent(), true);
 
     $roles = ['ROLE_USER'];
 
-    $user = $this->userManager->createUser(
+    $this->userManager->createUser(
       $data['email'],
       $data['password'],
       $data['first_name'],
@@ -40,8 +49,10 @@ class SecurityController extends AbstractController
       $roles
     );
 
-    // dd($user);
+    if (!$data['email'] || !$data['password'] || !$data['first_name'] || !$data['last_name']) {
+      return new JsonResponse(['error' => 'Invalid data!'], 400);
+    }
 
-    return $this->json('User registered');
+    return new JsonResponse(['message' => 'User registered!'], 201);
   }
 }
