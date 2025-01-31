@@ -146,13 +146,22 @@ function create(): void
     } else {
         run('symfony new ' . $projectName);
     }
-    // remove .git folder in the project
+
+    fs()->copy(__DIR__ . '/castor.php', $projectName . '/castor.php');
+    fs()->rename(__DIR__ . '/castor.php', __DIR__ . '/castor.php.old');
+
     io()->newLine();
     io()->info('The following command will remove the .git folder in the project');
     $git = io()->confirm('Are you already in a git repository? ', true);
     if ($git) {
         fs()->remove($projectName . '/.git');
     }
+
+    io()->newLine();
+    io()->info([
+        "'Successfully created project ' . $projectName",
+        'Run `cd ' . $projectName . '` to enter the project directory'
+    ]);
 }
 
 /**
@@ -167,7 +176,6 @@ function server(): void
 {
     io()->title('Opening Symfony server');
     run('symfony serve -d --listen-ip=localhost');
-    run('symfony open:local');
 }
 
 /**
