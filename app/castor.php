@@ -309,6 +309,12 @@ function initializeDatabase(): void
     run('symfony console doctrine:database:create --if-not-exists');
     run('symfony console make:migration');
     run('symfony console doctrine:migrations:migrate');
+    $fixtures = io()->ask('Would you like to load fixtures?', 'y');
+    if ($fixtures === 'y') {
+        loadFixtures();
+    }
+    io()->newLine();
+    io()->success('Database reset');
 }
 
 /**
