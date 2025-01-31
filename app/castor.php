@@ -314,11 +314,7 @@ function initializeDatabase(): void
         loadFixtures();
     }
     io()->newLine();
-<<<<<<< HEAD
-    io()->success('Database reset');
-=======
     io()->success('Database initialized');
->>>>>>> jason
 }
 
 /**
