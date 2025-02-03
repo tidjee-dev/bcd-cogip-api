@@ -6,28 +6,28 @@ use App\Entity\Users;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 
 class UserManager
 {
-  private UserPasswordHasherInterface $passwordHasher;
-  private EntityManagerInterface $entityManager;
-
   public function __construct(
-    UserPasswordHasherInterface $passwordHasher,
-    EntityManagerInterface $entityManager
-  ) {
-    $this->passwordHasher = $passwordHasher;
-    $this->entityManager = $entityManager;
-  }
+    private UserPasswordHasherInterface $passwordHasher,
+    private EntityManagerInterface $entityManager,
+    private JWTTokenManagerInterface $jwtManager
+  ) {}
 
   public function createUser(
     string $email,
     string $password,
     string $firstName,
     string $lastName,
-    array $roles
-
+    array $roles = ['ROLE_USER']
   ): Users {
+    $existingUser = $this->entityManager->getRepository(Users::class)->findOneBy(['email' => $email]);
+    if ($existingUser) {
+      throw new \RuntimeException('Email already exists!');
+    }
+
     $user = new Users();
     $user->setEmail($email);
     $user->setPassword($this->passwordHasher->hashPassword($user, $password));
@@ -41,21 +41,15 @@ class UserManager
     return $user;
   }
 
-  public function login(
-    string $email,
-    string $password
-  ): JsonResponse {
-    $user = $this->entityManager->getRepository(Users::class)->findOneByEmail($email);
+  public function authenticateUser(string $email, string $password): JsonResponse
+  {
+    $user = $this->entityManager->getRepository(Users::class)->findOneBy(['email' => $email]);
 
-    if (!$user) {
-      return new JsonResponse(['error' => 'Invalid email!'], 400);
+    if (!$user || !$this->passwordHasher->isPasswordValid($user, $password)) {
+      return new JsonResponse(['error' => 'Invalid credentials'], 401);
     }
 
-    // TODO: Connect the user
-    if (!$this->passwordHasher->isPasswordValid($user, $password)) {
-      return new JsonResponse(['error' => 'Invalid password!'], 400);
-    }
-
-    return new JsonResponse(['message' => 'Login!'], 200);
+    $token = $this->jwtManager->create($user);
+    return new JsonResponse(['token' => $token], 200);
   }
 }
