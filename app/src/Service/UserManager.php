@@ -19,8 +19,8 @@ class UserManager
   public function createUser(
     string $email,
     string $password,
-    string $firstName,
-    string $lastName,
+    string $firstname,
+    string $lastname,
     array $roles = ['ROLE_USER']
   ): Users {
     $existingUser = $this->entityManager->getRepository(Users::class)->findOneBy(['email' => $email]);
@@ -31,14 +31,49 @@ class UserManager
     $user = new Users();
     $user->setEmail($email);
     $user->setPassword($this->passwordHasher->hashPassword($user, $password));
-    $user->setFirstName($firstName);
-    $user->setLastName($lastName);
+    $user->setFirstname($firstname);
+    $user->setLastname($lastname);
     $user->setRoles($roles);
 
     $this->entityManager->persist($user);
     $this->entityManager->flush();
 
     return $user;
+  }
+
+  public function updateUser(
+    int $id,
+    string $email,
+    string $password,
+    string $firstname,
+    string $lastname,
+    array $roles = ['ROLE_USER']
+  ): Users {
+    $user = $this->entityManager->getRepository(Users::class)->find($id);
+    if (!$user) {
+      return new JsonResponse(['error' => 'User not found'], 404);
+    }
+
+    $user->setEmail($email);
+    $user->setPassword($this->passwordHasher->hashPassword($user, $password));
+    $user->setFirstname($firstname);
+    $user->setLastname($lastname);
+    $user->setRoles($roles);
+    $user->setUpdatedAt(new \DateTime());
+
+    $this->entityManager->persist($user);
+    $this->entityManager->flush();
+
+    return $user;
+  }
+
+  public function deleteUser(int $id): void
+  {
+    $user = $this->entityManager->getRepository(Users::class)->find($id);
+    if ($user) {
+      $this->entityManager->remove($user);
+      $this->entityManager->flush();
+    }
   }
 
   public function authenticateUser(string $email, string $password): JsonResponse

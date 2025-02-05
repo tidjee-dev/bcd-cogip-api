@@ -20,7 +20,12 @@ class SecurityController extends AbstractController
       return new JsonResponse(['error' => 'Email and password required'], 400);
     }
 
-    return $userManager->authenticateUser($data['email'], $data['password']);
+    $userManager->authenticateUser($data['email'], $data['password']);
+
+    $user = $this->getUser();
+    dd($user);
+
+    return new JsonResponse(['message' => 'Login successful']);
   }
 
   #[Route('/api/register', name: 'app_register', methods: ['POST'])]
