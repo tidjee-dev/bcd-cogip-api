@@ -7,6 +7,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
+use RuntimeException;
 
 class UserManager
 {
@@ -70,10 +71,11 @@ class UserManager
   public function deleteUser(int $id): void
   {
     $user = $this->entityManager->getRepository(Users::class)->find($id);
-    if ($user) {
-      $this->entityManager->remove($user);
-      $this->entityManager->flush();
+    if (!$user) {
+      throw new \RuntimeException('User not found');
     }
+    $this->entityManager->remove($user);
+    $this->entityManager->flush();
   }
 
   public function authenticateUser(string $email, string $password): JsonResponse
