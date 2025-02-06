@@ -2,7 +2,9 @@
 
 namespace App\Controller;
 
+use App\Entity\Companies;
 use App\Service\InvoicesManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Rakit\Validation\Validator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -14,7 +16,8 @@ class InvoicesController extends AbstractController
 {
 
   public function __construct(
-    private InvoicesManager $invoicesManager
+    private InvoicesManager $invoicesManager,
+    private EntityManagerInterface $entityManager
   ) {}
   #[Route('/', name: 'index', methods: ['GET'])]
   public function index(): void
@@ -42,14 +45,16 @@ class InvoicesController extends AbstractController
     if ($validation->fails()) {
       return new JsonResponse($validation->errors()->firstOfAll(), 400);
     } else {
+      $company = $this->entityManager->getRepository(Companies::class)->find($data['company_id']);
       $this->invoicesManager->createInvoice(
         $data['ref'],
-        $data['company_id']
+        $company
       );
     }
     return new JsonResponse(['message' => 'Invoice created successfully'], 201);
   }
 
+  #[Route('/{id}', name: 'update', methods: ['PUT'])]
   public function update(
     int $id,
     Request $request
@@ -66,15 +71,26 @@ class InvoicesController extends AbstractController
     if ($validation->fails()) {
       return new JsonResponse($validation->errors()->firstOfAll(), 400);
     } else {
-      $this->invoicesManager->updateInvoice(
-        $id,
-        $data['ref'],
-        $data['company_id']
-      );
-      return new JsonResponse(['message' => 'Invoice updated successfully']);
+      $company = $this->entityManager->getRepository(Companies::class)->find($data['company_id']);
+
+      if (!$company) {
+        return new JsonResponse(['message' => 'Company not found'], 404);
+      }
+
+      try {
+        $this->invoicesManager->updateInvoice(
+          $id,
+          $data['ref'],
+          $company
+        );
+        return new JsonResponse(['message' => 'Invoice updated successfully']);
+      } catch (\RuntimeException $e) {
+        return new JsonResponse(['message' => $e->getMessage()], 404);
+      }
     }
   }
 
+  #[Route('/{id}', name: 'delete', methods: ['DELETE'])]
   public function delete(int $id): JsonResponse
   {
     $this->invoicesManager->deleteInvoice($id);

@@ -11,7 +11,7 @@ class CompaniesManager
   public function __construct(
     private EntityManagerInterface $entityManager
   ) {}
-
+  
   public function createCompany(
     string $name,
     Types $type,
@@ -46,7 +46,7 @@ class CompaniesManager
     $company->setType($type);
     $company->setCountry($country);
     $company->setTva($tva);
-    $company->setUpdatedAt(new \DateTime());
+    $company->setUpdatedAt(new \DateTimeImmutable());
 
     $this->entityManager->flush();
 

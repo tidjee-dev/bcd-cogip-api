@@ -30,7 +30,7 @@ class TypesManager
     }
 
     $type->setName($name);
-    $type->setUpdatedAt(new \DateTime());
+    $type->setUpdatedAt(new \DateTimeImmutable());
 
     $this->entityManager->flush();
 

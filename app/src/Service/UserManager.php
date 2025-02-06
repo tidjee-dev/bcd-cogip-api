@@ -60,7 +60,7 @@ class UserManager
     $user->setFirstname($firstname);
     $user->setLastname($lastname);
     $user->setRoles($roles);
-    $user->setUpdatedAt(new \DateTime());
+    $user->setUpdatedAt(new \DateTimeImmutable());
 
     $this->entityManager->persist($user);
     $this->entityManager->flush();
@@ -78,7 +78,7 @@ class UserManager
     $this->entityManager->flush();
   }
 
-  public function authenticateUser(string $email, string $password): JsonResponse
+  public function authenticateUser(string $email, string $password): string
   {
     $user = $this->entityManager->getRepository(Users::class)->findOneBy(['email' => $email]);
 
@@ -86,7 +86,6 @@ class UserManager
       return new JsonResponse(['error' => 'Invalid credentials'], 401);
     }
 
-    $token = $this->jwtManager->create($user);
-    return new JsonResponse(['token' => $token], 200);
+    return $this->jwtManager->create($user);
   }
 }

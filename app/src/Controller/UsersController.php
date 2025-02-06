@@ -77,7 +77,7 @@ class UsersController extends AbstractController
     }
   }
 
-  #[Route('/{id}', name: 'update', methods: ['PATCH'])]
+  #[Route('/{id}', name: 'update', methods: ['PUT'])]
   public function update(
     int $id,
     Request $request

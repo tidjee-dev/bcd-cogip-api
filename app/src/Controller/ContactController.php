@@ -2,8 +2,8 @@
 
 namespace App\Controller;
 
-use App\Entity\Types;
-use App\Service\CompaniesManager;
+use App\Entity\Companies;
+use App\Service\ContactManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Rakit\Validation\Validator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -11,14 +11,14 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/api/companies', name: 'companies_')]
-class CompaniesController extends AbstractController
+#[Route('/api/contacts', name: 'contact_')]
+class ContactController extends AbstractController
 {
-
   public function __construct(
-    private CompaniesManager $companiesManager,
+    private ContactManager $contactManager,
     private EntityManagerInterface $entityManager
   ) {}
+
   #[Route('/', name: 'index', methods: ['GET'])]
   public function index(): void
   {
@@ -35,30 +35,29 @@ class CompaniesController extends AbstractController
   public function create(
     Request $request
   ): JsonResponse {
-    $data = json_decode($request->getContent(), true);
 
+    $data = json_decode($request->getContent(), true);
     $validator = new Validator();
 
     $validation = $validator->validate($data, [
       'name' => 'required',
-      'type' => 'required|integer',
-      'country' => 'required',
-      'tva' => 'required',
+      'email' => 'required|email',
+      'phone' => 'required',
+      'company_id' => 'required|integer',
     ]);
 
     if ($validation->fails()) {
       return new JsonResponse($validation->errors()->firstOfAll(), 400);
     } else {
-      $type = $this->entityManager->getRepository(Types::class)->find($data['type']);
-
-      $this->companiesManager->createCompany(
+      $company = $this->entityManager->getRepository(Companies::class)->find($data['company_id']);
+      $this->contactManager->createContact(
         $data['name'],
-        $type,
-        $data['country'],
-        $data['tva']
+        $data['email'],
+        $data['phone'],
+        $company
       );
-      return new JsonResponse(['message' => 'Company created successfully'], 201);
     }
+    return new JsonResponse(['message' => 'Contact created successfully'], 201);
   }
 
   #[Route('/{id}', name: 'update', methods: ['PUT'])]
@@ -66,38 +65,37 @@ class CompaniesController extends AbstractController
     int $id,
     Request $request
   ): JsonResponse {
+
     $data = json_decode($request->getContent(), true);
 
     $validator = new Validator();
 
     $validation = $validator->validate($data, [
       'name' => 'required',
-      'type' => 'required|integer',
-      'country' => 'required',
-      'tva' => 'required',
+      'email' => 'required|email',
+      'phone' => 'required',
+      'company_id' => 'required|integer',
     ]);
 
     if ($validation->fails()) {
       return new JsonResponse($validation->errors()->firstOfAll(), 400);
     } else {
-      $type = $this->entityManager->getRepository(Types::class)->find($data['type']);
-      // dd($type);
-      $this->companiesManager->updateCompany(
+      $company = $this->entityManager->getRepository(Companies::class)->find($data['company_id']);
+      $this->contactManager->updateContact(
         $id,
         $data['name'],
-        $type,
-        $data['country'],
-        $data['tva']
+        $data['email'],
+        $data['phone'],
+        $company
       );
-      return new JsonResponse(['message' => 'Company updated successfully'], 200);
     }
+    return new JsonResponse(['message' => 'Contact updated successfully'], 200);
   }
 
   #[Route('/{id}', name: 'delete', methods: ['DELETE'])]
-  public function delete(
-    int $id
-  ): JsonResponse {
-    $this->companiesManager->deleteCompany($id);
-    return new JsonResponse(null, 204);
+  public function delete(int $id): void
+  {
+    $this->contactManager->deleteContact($id);
+    return;
   }
 }

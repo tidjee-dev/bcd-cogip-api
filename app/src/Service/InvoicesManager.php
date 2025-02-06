@@ -38,8 +38,9 @@ class InvoicesManager
 
     $invoice->setRef($ref);
     $invoice->setCompany($company);
-    $invoice->setUpdatedAt(new \DateTime());
+    $invoice->setUpdatedAt(new \DateTimeImmutable());
 
+    $this->entityManager->persist($invoice);
     $this->entityManager->flush();
 
     return $invoice;

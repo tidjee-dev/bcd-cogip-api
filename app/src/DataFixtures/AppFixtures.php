@@ -28,7 +28,9 @@ class AppFixtures extends Fixture
             $user->setPassword($faker->password);
             $user->setRoles(['ROLE_USER']);
             $user->setCreatedAt(new \DateTimeImmutable($faker->dateTimeBetween('-1 year', '-1 month')->format('Y-m-d H:i:s')));
-            $user->setUpdatedAt(new \DateTimeImmutable($faker->dateTimeBetween('-1 month', 'now')->format('Y-m-d H:i:s')));
+            $user->setUpdatedAt(
+                rand(0, 1) ? new \DateTimeImmutable($faker->dateTimeBetween('-1 month', 'now')->format('Y-m-d H:i:s')) : null
+            );
             $manager->persist($user);
             $users[] = $user;
 

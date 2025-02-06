@@ -45,7 +45,7 @@ class TypesController extends AbstractController
     }
   }
 
-  #[Route('/{id}', name: 'update', methods: ['PATCH'])]
+  #[Route('/{id}', name: 'update', methods: ['PUT'])]
   public function update(int $id, Request $request)
   {
     $data = json_decode($request->getContent(), true);
