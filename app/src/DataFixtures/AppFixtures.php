@@ -28,7 +28,9 @@ class AppFixtures extends Fixture
             $user->setPassword($faker->password);
             $user->setRoles(['ROLE_USER']);
             $user->setCreatedAt(new \DateTimeImmutable($faker->dateTimeBetween('-1 year', '-1 month')->format('Y-m-d H:i:s')));
-            $user->setUpdatedAt(new \DateTimeImmutable($faker->dateTimeBetween('-1 month', 'now')->format('Y-m-d H:i:s')));
+            $user->setUpdatedAt(
+                rand(0, 1) ? new \DateTimeImmutable($faker->dateTimeBetween('-1 month', 'now')->format('Y-m-d H:i:s')) : null
+            );
             $manager->persist($user);
             $users[] = $user;
 
@@ -49,7 +51,9 @@ class AppFixtures extends Fixture
             $type = new Types();
             $type->setName($typeName);
             $type->setCreatedAt(new \DateTimeImmutable($faker->dateTimeBetween('-1 year', '-1 month')->format('Y-m-d H:i:s')));
-            $type->setUpdatedAt(new \DateTimeImmutable($faker->dateTimeBetween('-1 month', 'now')->format('Y-m-d H:i:s')));
+            $type->setUpdatedAt(
+                rand(0, 1) ? new \DateTimeImmutable($faker->dateTimeBetween('-1 month', 'now')->format('Y-m-d H:i:s')) : null
+            );
             $manager->persist($type);
             $types[] = $type;
         }
@@ -64,7 +68,9 @@ class AppFixtures extends Fixture
             $company->setCountry($faker->country);
             $company->setTva($faker->vat);
             $company->setCreatedAt(new \DateTimeImmutable($faker->dateTimeBetween('-1 year', '-1 month')->format('Y-m-d H:i:s')));
-            $company->setUpdatedAt(new \DateTimeImmutable($faker->dateTimeBetween('-1 month', 'now')->format('Y-m-d H:i:s')));
+            $company->setUpdatedAt(
+                rand(0, 1) ? new \DateTimeImmutable($faker->dateTimeBetween('-1 month', 'now')->format('Y-m-d H:i:s')) : null
+            );
 
             $companies[] = $company;
 
@@ -79,7 +85,9 @@ class AppFixtures extends Fixture
             $invoice->setRef($faker->ean13);
             $invoice->setCompany($faker->randomElement($companies));
             $invoice->setCreatedAt(new \DateTimeImmutable($faker->dateTimeBetween('-1 year', '-1 month')->format('Y-m-d H:i:s')));
-            $invoice->setUpdatedAt(new \DateTimeImmutable($faker->dateTimeBetween('-1 month', 'now')->format('Y-m-d H:i:s')));
+            $invoice->setUpdatedAt(
+                rand(0, 1) ? new \DateTimeImmutable($faker->dateTimeBetween('-1 month', 'now')->format('Y-m-d H:i:s')) : null
+            );
 
             $invoices[] = $invoice;
 
@@ -96,7 +104,9 @@ class AppFixtures extends Fixture
             $contact->setEmail($faker->email);
             $contact->setPhone($faker->phoneNumber);
             $contact->setCreatedAt(new \DateTimeImmutable($faker->dateTimeBetween('-1 year', '-1 month')->format('Y-m-d H:i:s')));
-            $contact->setUpdatedAt(new \DateTimeImmutable($faker->dateTimeBetween('-1 month', 'now')->format('Y-m-d H:i:s')));
+            $contact->setUpdatedAt(
+                rand(0, 1) ? new \DateTimeImmutable($faker->dateTimeBetween('-1 month', 'now')->format('Y-m-d H:i:s')) : null
+            );
 
             $contacts[] = $contact;
 
