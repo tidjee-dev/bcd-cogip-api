@@ -71,4 +71,7 @@ It will returns informations about :
 
 ## Credits
 
-This API was created by [Pinet Donatien](https://github.com/tidjee-dev) and [de Sadeleer Jason](https://github.com/sakakara).
+This is part of the fullstack ***Cogip project***:
+
+- This [API](https://github.com/tidjee-dev/bcd-cogip-api) by [Pinet Donatien](https://github.com/tidjee-dev) and [de Sadeleer Jason](https://github.com/sakakara)
+- The [frontend in React](#) by [Diana Aliabieva](https://github.com/DianaAliabieva) and [Josias mbogle](https://github.com/junior344).
