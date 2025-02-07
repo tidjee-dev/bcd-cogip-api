@@ -40,6 +40,7 @@ class Types
     public function __construct()
     {
         $this->companies = new ArrayCollection();
+        $this->createdAt = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
