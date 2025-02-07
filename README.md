@@ -1,7 +1,7 @@
 # bcd-cogip-api
 
 <!-- Admonition Disclaimer -->
-> [!WARNING] All data is fake and not real. This project is only for learning purpose.
+>[!WARNING] All data in this API is fake and not real. This project is only for learning purpose.
 
 ## Overview
 
