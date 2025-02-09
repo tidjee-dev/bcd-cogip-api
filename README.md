@@ -2,7 +2,7 @@
 
 <!-- Admonition Disclaimer -->
 > [!WARNING]
-> All data in this API is fake and not real. This project is only for learning purpose.
+> All data in this API are fake and not real. This project is only for learning purpose.
 
 ## Overview
 
